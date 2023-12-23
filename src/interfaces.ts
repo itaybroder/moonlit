@@ -14,3 +14,9 @@ export interface PlaybackSettings {
   reverbDecay: number;
   reverbPreDelay: number;
 }
+
+export interface Playlist {
+  id: string;
+  title: string;
+  songs: Song[];
+}

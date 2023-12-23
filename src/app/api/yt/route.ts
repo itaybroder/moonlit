@@ -18,7 +18,7 @@ export async function POST(req: Request) {
             message: "Video is not available",
           },
           {
-            status: 400
+            status: 400,
           }
         );
       }

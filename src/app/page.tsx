@@ -33,8 +33,14 @@ import { useRouter } from "next/navigation";
 import { usePostHog } from "posthog-js/react";
 import Icon from "../components/Icon";
 import { songAtom } from "../state";
-import { getYouTubeId, isYoutubeURL } from "../utils";
+import {
+  getYouTubeId,
+  isYoutubeURL,
+  getYouTubePlaylistId,
+  isYoutubePlaylistURL,
+} from "../utils";
 import useNoSleep from "@/hooks/useNoSleep";
+import { useState } from "react";
 
 const loadingAtom = atom<{
   status: boolean;
@@ -153,27 +159,33 @@ function LocalUpload() {
 
 function YoutubeUpload() {
   const router = useRouter();
+
   const form = useForm({
     initialValues: {
       url: "",
     },
     validate: {
       url: (value) =>
-        !isYoutubeURL(value) ? "Must be YouTube or YouTube Music URL" : null,
+        !isYoutubeURL(value) && !isYoutubePlaylistURL(value)
+          ? "Must be a YouTube video or playlist URL"
+          : null,
     },
   });
 
   function onSubmit(url: string) {
-    const id = getYouTubeId(url);
-    if (!id) {
+    const videoId = getYouTubeId(url);
+    const playlistId = getYouTubePlaylistId(url);
+
+    if (videoId) {
+      router.push("/watch?v=" + videoId);
+    } else if (playlistId) {
+      router.push("/playlist?list=" + playlistId);
+    } else {
       notifications.show({
         title: "Error",
         message: "Invalid YouTube URL",
       });
-      return;
     }
-
-    router.push("/watch?v=" + id);
   }
 
   return (
@@ -181,11 +193,12 @@ function YoutubeUpload() {
       <Flex direction="column" gap="md">
         <TextInput
           icon={<IconBrandYoutube />}
-          placeholder="YouTube URL"
+          placeholder="Enter a YouTube video or playlist URL"
           size="lg"
           type="url"
           {...form.getInputProps("url")}
         />
+
         <Button size="lg" type="submit">
           Load music from YouTube
         </Button>
@@ -282,7 +295,7 @@ export default function UploadPage() {
                     userSelect: "none",
                   }}
                 >
-                  Moonlit
+                  ReverbReverb
                 </Text>
               </Flex>
             </Center>

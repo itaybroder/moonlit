@@ -14,6 +14,18 @@ export function getYouTubeId(url: string) {
   return youtubeRegex.exec(url)?.[5];
 }
 
+export function isYoutubePlaylistURL(url: string) {
+  const youtubeRegex =
+    /^(https?:\/\/)?(www\.)?(m\.)?(youtube\.com\/playlist\?list=|music\.youtube\.com\/playlist\?list=)([a-zA-Z0-9_-]+)/;
+  return youtubeRegex.test(url);
+}
+
+export function getYouTubePlaylistId(url: string) {
+  const youtubeRegex =
+    /^(https?:\/\/)?(www\.)?(m\.)?(youtube\.com\/playlist\?list=|music\.youtube\.com\/playlist\?list=)([a-zA-Z0-9_-]+)/;
+  return youtubeRegex.exec(url)?.[5];
+}
+
 export function isJSONString(str: string) {
   try {
     JSON.parse(str);
@@ -33,7 +45,10 @@ export function getFormattedTime(seconds: number) {
   return `${formattedMinutes}:${formattedSeconds}`;
 }
 
-export function getDominantColorFromImage(img: HTMLImageElement, palenessFactor: number = 0.8) {
+export function getDominantColorFromImage(
+  img: HTMLImageElement,
+  palenessFactor: number = 0.8
+) {
   const canvas = document.createElement("canvas");
   const ctx = canvas.getContext("2d");
   ctx.drawImage(img, 0, 0);
@@ -43,7 +58,7 @@ export function getDominantColorFromImage(img: HTMLImageElement, palenessFactor:
   let g = 0;
   let b = 0;
   let count = 0;
-  
+
   for (let i = 0; i < data.length; i += 4) {
     if (data[i + 3] <= 0) {
       continue;
@@ -53,10 +68,10 @@ export function getDominantColorFromImage(img: HTMLImageElement, palenessFactor:
     b += data[i + 2];
     count++;
   }
-  
+
   r = Math.floor((r / count) * palenessFactor);
   g = Math.floor((g / count) * palenessFactor);
   b = Math.floor((b / count) * palenessFactor);
-  
+
   return `rgb(${r}, ${g}, ${b})`;
 }
